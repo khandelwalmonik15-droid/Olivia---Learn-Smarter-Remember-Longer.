@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Olivia - AI Study Assistant</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-avatar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            <circle cx="12" cy="12" r="4" fill="currentColor" fill-opacity="0.2"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">Olivia <span class="ai-badge">AI</span></div>
+          <span class="brand-subtitle">Study Assistant</span>
+        </div>
+      </div>
+      <div class="page-status" id="pageStatus" title="Connected to current page">
+        <span class="status-dot"></span>
+        <span class="status-text">Active Tab</span>
+      </div>
+    </header>
+
+    <!-- Quick Capture Form -->
+    <section class="quick-capture">
+      <div class="input-wrapper">
+        <input type="text" id="quickInput" placeholder="Save a key concept or note..." autocomplete="off">
+        <button id="quickSaveBtn" title="Save Note" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Save</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="notes">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>Notes</span>
+        <span class="badge" id="notesCount">2</span>
+      </button>
+
+      <button class="tab-btn" data-tab="flashcards">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+        </svg>
+        <span>Flashcards</span>
+        <span class="badge" id="cardsCount">0</span>
+      </button>
+
+      <button class="tab-btn" data-tab="quiz">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>Quiz</span>
+        <span class="badge highlight">New</span>
+      </button>
+
+      <button class="tab-btn" data-tab="settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Panels -->
+    <main class="panels-container">
+      <!-- Notes Panel -->
+      <section class="panel active" id="notesPanel">
+        <div class="panel-header">
+          <h3>Saved Study Notes</h3>
+          <span class="subtext">Auto-organized by Olivia</span>
+        </div>
+        <div class="notes-list" id="notesList">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- Flashcards Panel -->
+      <section class="panel" id="flashcardsPanel">
+        <div class="panel-header">
+          <h3>Active Recall Flashcards</h3>
+          <span class="subtext" id="cardProgress">0 Cards</span>
+        </div>
+
+        <!-- Empty Flashcards State -->
+        <div id="cardsEmptyState" class="empty-quiz-card" style="display: none;">
+          <div class="empty-icon-avatar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <h4 id="cardsEmptyTitle">No Flashcards Yet</h4>
+          <p id="cardsEmptyMsg">Highlight any study text on a webpage, right-click and select <strong style="color: #c084fc;">"Save to Olivia"</strong>. Olivia will automatically extract key concepts and create interactive flashcards for you!</p>
+          <div class="empty-quiz-actions">
+            <button class="btn-primary" id="cardsAddNotesBtn">
+              <span>+ Add a Note</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3D Flippable Card -->
+        <div class="flashcard-scene" id="flashcardScene">
+          <div class="flashcard-inner" id="flashcardInner">
+            <div class="card-face card-front">
+              <span class="card-pill" id="cardFrontBadge">Concept</span>
+              <p class="card-text" id="cardQuestion">Loading concept...</p>
+              <div class="flip-hint">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                </svg>
+                <span>Click card to reveal answer</span>
+              </div>
+            </div>
+            <div class="card-face card-back">
+              <span class="card-pill highlight" id="cardBackBadge">Answer</span>
+              <p class="card-text" id="cardAnswer">Loading answer...</p>
+              <div class="flip-hint">
+                <span>Click card to view question</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flashcard Controls -->
+        <div class="flashcard-controls" id="flashcardControls">
+          <button class="btn-secondary" id="prevCardBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Prev</span>
+          </button>
+          
+          <div class="rating-buttons">
+            <button class="btn-rate rate-hard" id="rateHardBtn" title="Need more practice">Needs Work</button>
+            <button class="btn-rate rate-good" id="rateGoodBtn" title="Got it right!">Mastered</button>
+          </div>
+
+          <button class="btn-secondary" id="nextCardBtn">
+            <span>Next</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Quiz Panel -->
+      <section class="panel" id="quizPanel">
+        <!-- Topic Selection Bar -->
+        <div class="quiz-topic-bar">
+          <div class="topic-select-group">
+            <label for="quizTopicSelect" class="topic-select-label">Topic:</label>
+            <select id="quizTopicSelect" class="quiz-topic-dropdown">
+              <option value="all">🌟 All Topics (Mixed Test)</option>
+            </select>
+          </div>
+          <button id="quizNewTestBtn" class="btn-new-test" title="Generate a fresh 5-question test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+            </svg>
+            <span>New Test</span>
+          </button>
+        </div>
+
+        <!-- 1. Empty / Not Enough Study Material State -->
+        <div id="quizEmptyState" class="quiz-state-view" style="display: none;">
+          <div class="empty-quiz-card">
+            <div class="empty-icon-avatar">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h4 id="quizEmptyTitle">Need More Material For This Topic</h4>
+            <p id="quizEmptyMsg">Olivia builds 5-question mini tests directly from your study material. Please save at least 5 study items or choose "All Topics" to start practicing.</p>
+            <div class="empty-quiz-actions">
+              <button class="btn-primary" id="quizSwitchAllTopicsBtn">
+                <span>🌟 Quiz All Topics</span>
+              </button>
+              <button class="btn-secondary" id="quizAddNotesBtn">
+                <span>+ Add Notes</span>
+              </button>
+              <button class="btn-secondary" id="quizLoadStarterBtn">
+                <span>Restore Starter Pack</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Active Quiz State (Grounded in Saved Notes) -->
+        <div id="quizActiveState" class="quiz-state-view">
+          <div id="quizLimitationBanner" class="quiz-limit-banner" style="display: none;"></div>
+          <div class="quiz-top-bar">
+            <div class="quiz-meta-info">
+              <span class="quiz-step-badge" id="quizProgress">Question 1 of 5</span>
+              <span class="quiz-topic-pill" id="quizTopic">#Study</span>
+            </div>
+            <div class="quiz-progress-track">
+              <div class="quiz-progress-fill" id="quizProgressFill" style="width: 20%;"></div>
+            </div>
+          </div>
+
+          <div class="quiz-container">
+            <div class="quiz-question-card">
+              <p class="quiz-question-text" id="quizQuestion">Loading question...</p>
+            </div>
+
+            <div class="quiz-options" id="quizOptions">
+              <!-- Rendered by JS -->
+            </div>
+
+            <div class="quiz-feedback" id="quizFeedback"></div>
+
+            <div class="quiz-footer">
+              <button class="btn-primary" id="nextQuizBtn" style="display: none;">Next Question</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Quiz Results State -->
+        <div id="quizResultsState" class="quiz-state-view" style="display: none;">
+          <div class="quiz-results-card">
+            <!-- Score & Performance Header -->
+            <div class="results-header">
+              <div class="score-badge">
+                <span class="score-number" id="scoreFraction">4/5</span>
+                <span class="score-pct" id="scorePct">80%</span>
+              </div>
+              <div class="results-summary">
+                <div class="remark-pill" id="remarkTag">Excellent</div>
+                <p class="remark-desc" id="remarkDesc">Great grasp of the material!</p>
+              </div>
+            </div>
+
+            <!-- Topic Performance Analysis: Understood vs Need Revision -->
+            <div class="results-section">
+              <div class="section-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>Topic Performance Analysis</span>
+              </div>
+
+              <div class="topic-analysis-block">
+                <div class="topic-analysis-row">
+                  <span class="topic-analysis-label understood">✓ Topics Understood:</span>
+                  <div class="topic-pills-wrap" id="understoodTopicsList">
+                    <!-- e.g. Biology, Genetics -->
+                  </div>
+                </div>
+                <div class="topic-analysis-row">
+                  <span class="topic-analysis-label revise">⚠️ Topics to Revise:</span>
+                  <div class="topic-pills-wrap" id="reviseTopicsList">
+                    <!-- e.g. Physics -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Revision Suggestions -->
+            <div class="results-section">
+              <div class="section-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                <span>What to Revise Next</span>
+              </div>
+              <div class="revision-suggestions" id="revisionSuggestionsList">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
+            <!-- Detailed Question-by-Question Breakdown -->
+            <div class="results-section">
+              <div class="section-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 11 12 14 22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                <span>Question Breakdown & Explanations</span>
+              </div>
+              <div class="breakdown-list" id="breakdownList">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
+            <!-- Results Action Buttons -->
+            <div class="results-actions">
+              <button class="btn-primary" id="restartQuizBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                </svg>
+                <span>Retake Quiz</span>
+              </button>
+              <button class="btn-secondary" id="resultsNotesBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                </svg>
+                <span>Review Notes</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings Panel -->
+      <section class="panel" id="settingsPanel">
+        <div class="panel-header">
+          <h3>Preferences & AI Mode</h3>
+          <span class="subtext">Configure your study companion</span>
+        </div>
+
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-name">Auto-Summarization</span>
+              <span class="setting-desc">Condense saved highlights into study bullets</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked id="toggleSummarize">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-name">Dark Obsidian Glow</span>
+              <span class="setting-desc">Purple and blue gradient ambiance</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked id="toggleTheme">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-name">Generate AI Flashcards</span>
+              <span class="setting-desc">Automatically create cards when saving notes</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked id="toggleAutoCards">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-actions">
+          <button class="btn-outline-danger" id="resetDataBtn">Reset Demo Data</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer info -->
+    <footer class="app-footer">
+      <span>Olivia Study Engine v1.0</span>
+      <span class="footer-dot">•</span>
+      <span class="ai-status">⚡ Powered by AI</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

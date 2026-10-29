@@ -1,0 +1,29 @@
+/*
+ * Olivia - AI Study Assistant
+ * Content Script Styles — Floating Widget
+ *
+ * These rules are injected into the HOST PAGE.
+ * They are intentionally minimal: only the shadow host positioning lives here.
+ * All widget internals are styled inside the shadow root (in content.js),
+ * so they can never conflict with the page's own CSS.
+ */
+
+#olivia-widget-host {
+  /* Fixed to the viewport, above everything */
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 2147483647 !important; /* max z-index — always on top */
+
+  /* Transparent — the shadow root renders the actual UI */
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+
+  /* Isolate from host-page pointer events */
+  pointer-events: auto !important;
+  display: block !important;
+}
